@@ -1,4 +1,4 @@
-﻿@page "/demo"
+﻿@page "/"
 @using CardanoSharp.CatalystDemo
 
 <div class="d-flex flex-column align-items-center ">
@@ -39,8 +39,6 @@
                         <InputNumber class="form-control" @bind-Value="formRequest.Amount" />
                     </div>
                     <Button Theme="primary" Text="Submit" Type="submit" />
-
-
                 </EditForm>
                 @if (Transaction != "")
                 {

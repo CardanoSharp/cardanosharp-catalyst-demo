@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace CardanoSharp.CatalystDemo
 {
     public class SendFormRequest
