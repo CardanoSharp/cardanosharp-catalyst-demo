@@ -1,24 +1,78 @@
-﻿@page "/index.html"
+﻿@page "/demo"
+@using CardanoSharp.CatalystDemo
 
-<h1>Hello, world!</h1>
+<div class="d-flex flex-column align-items-center ">
+    <div class="pt-5">
+        <h1 class="light-text">Cordano Sharp Demo</h1>
+    </div>
+    <Button Theme="secondary" Text="Generate Wallet" OnClick="GetMnemonic" />
 
-Welcome to your new app.
+    @if (Mnemonic != "")
+    {
+        <Card Title="Mnemonic Generated" Classes="border-accent shadow-sm mb-2 mt-3 text-center">
+            <div style="width:500px">
+                @Mnemonic
+            </div>
+        </Card>
+        <Card Title="Address 1" Classes="border-accent shadow-sm mb-2 mt-2 text-center">
+            <div class="font-size-sm" style="width:500px">
+                @Address1
+            </div>
+        </Card>
+        <Card Title="Address 2" Classes="border-accent shadow-sm mb-2 mt-2 text-center">
+            <div class="font-size-sm" style="width:500px">
+                @Address2
+            </div>
+        </Card>
+        <Card Title="Send" Classes="border-accent shadow-sm mb-5 mt-2 text-center">
+            <div style="width:500px">
+                <EditForm Model="@formRequest" OnValidSubmit="@HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+                    <div class="form-group text-left">
+                        <label>Address</label>
+                        <InputText class="form-control" @bind-Value="formRequest.Address" />
+                    </div>
+                    <div class="form-group text-left">
+                        <label>Amount</label>
+                        <InputNumber class="form-control" @bind-Value="formRequest.Amount" />
+                    </div>
+                    <Button Theme="primary" Text="Submit" Type="submit" />
 
-<button @onclick="GenerateMnemonic">Generate Mnemonic</button>
 
-@if (!string.IsNullOrEmpty(mnemonic))
-{
-    <p>@mnemonic</p>
-}
+                </EditForm>
+                @if (Transaction != "")
+                {
+                    <div class="pt-3">
+                        @Transaction
+                    </div>
+                }
+            </div>
+        </Card>
+    }
+
+</div>
 
 @code {
-    private string mnemonic { get; set; }
 
-    public void GenerateMnemonic()
+    private string Mnemonic = "";
+    private string Address1 = "";
+    private string Address2 = "";
+    private string Transaction = "";
+
+    private void GetMnemonic()
     {
-        var keyS = new KeyService();
-        mnemonic = keyS.Generate(15);
+        Mnemonic = "consider friend complete substantial keep explain game disuse cobweb cheese deny sink consider exchange fallaciouss crawny sun bite sized notice whip savor vagabond";
+        Address1 = "asdlfkjhasd9f8asdf8hasdf8h9in98hf9e8wf98efw9ie9incehf9widjeis9is9dif9isd";
+        Address2 = "98sdhf9je988w9uecje9esi9ixmz9mciqoeitud9siewueinflkjsdfhieuhijviurgrudid";
+    }
+
+    private SendFormRequest formRequest = new SendFormRequest();
+
+    private void HandleValidSubmit()
+    {
+        // Process the valid form
+        Transaction = "https://link-to-transaction-on-explorer";
     }
 }

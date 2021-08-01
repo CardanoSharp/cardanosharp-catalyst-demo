@@ -1,22 +1,8 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
-body {
-    width: 800px;
-    height: 500px;
-}
-
-a, .btn-link {
-    color: #0366d6;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
 }
 
 app {
@@ -25,10 +11,129 @@ app {
     flex-direction: column;
 }
 
-.top-row {
-    height: 3.5rem;
-    display: flex;
-    align-items: center;
+a, .btn-link {
+    color: #0366d6;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+.btn {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600
+}
+
+.bg-secondary {
+    background-color: #F9F9F9 !important;
+}
+
+.border-accent {
+    border-color: #9A97D7 !important;
+}
+
+
+.btn-primary {
+    color: white;
+    background-color: black !important;
+    border: 0px;
+    color: #fff;
+    border-radius: 26px !important;
+}
+
+    .btn-primary:hover {
+        color: lightgray;
+    }
+
+.btn-secondary {
+    color: black;
+    background-color: white !important;
+    color: black;
+    border-radius: 26px !important;
+    border: 0px
+}
+
+.btn-secondary:hover {
+    color: grey
+}
+
+
+
+.bg-dark-purple {
+    background-color: #733AD0;
+}
+
+.bg-demo {
+    background-color: #8A5BD8;
+}
+
+.content {
+    padding-top: 1.1rem;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.card {
+    border-radius: 25px
+}
+
+.font-size-sm {
+    font-size: .85rem;
+}
+
+.font-size-xs {
+    font-size: .75rem;
+}
+
+h1 {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700
+}
+
+h2 {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700
+}
+
+h3 {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700
+}
+
+h4 {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 700
+}
+
+h5 {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600
+}
+
+h6 {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600
+}
+
+.light-text {
+    color: white
 }
 
 .main {
@@ -46,13 +151,18 @@ app {
             margin-left: 1.5rem;
         }
 
-.main .top-row a:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
+        .main .top-row a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+.navbar-toggler {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    /*    background-image: linear-gradient(180deg, #8A5BD8 0%, #3a0647 70%);*/
+    background-color: #8A5BD8
 }
 
     .sidebar .top-row {
@@ -102,12 +212,10 @@ app {
                 color: white;
             }
 
-.content {
-    padding-top: 1.1rem;
-}
-
-.navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
+.top-row {
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
 }
 
 .valid.modified:not([type=checkbox]) {
@@ -122,24 +230,7 @@ app {
     color: red;
 }
 
-#blazor-error-ui {
-    background: lightyellow;
-    bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
-    display: none;
-    left: 0;
-    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
-    position: fixed;
-    width: 100%;
-    z-index: 1000;
-}
 
-#blazor-error-ui .dismiss {
-    cursor: pointer;
-    position: absolute;
-    right: 0.75rem;
-    top: 0.5rem;
-}
 
 @media (max-width: 767.98px) {
     .main .top-row:not(.auth) {
@@ -186,3 +277,4 @@ app {
         display: block;
     }
 }
+
