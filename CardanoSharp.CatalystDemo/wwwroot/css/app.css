@@ -137,6 +137,8 @@ h6 {
 }
 
 .main {
+    padding-bottom: 30px;
+    width: 750px;
     flex: 1;
 }
 
