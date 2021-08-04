@@ -1,5 +1,8 @@
 ﻿@page "/index.html"
 @using CardanoSharp.CatalystDemo
+@using CardanoSharp.CatalystDemo.Commands;
+@using CardanoSharp.CatalystDemo.Queries;
+@inject MediatR.IMediator _mediator
 
 <div class="d-flex flex-column align-items-center ">
     <div class="pt-5">
@@ -55,15 +58,16 @@
 @code {
 
     private string Mnemonic = "";
-    private string Address1 = "";
+    private string Address1 = "addr_test1qqdpfnz4djvmn3xq43axkk4k0w82lthg96ugj7mqax4nv8k72mdkchnaw4fa56tyezlplr3sy54w9kwmps4psycarnysq0tccy";
     private string Address2 = "";
     private string Transaction = "";
 
-    private void GetMnemonic()
+    private async Task GetMnemonic()
     {
-        Mnemonic = "consider friend complete substantial keep explain game disuse cobweb cheese deny sink consider exchange fallaciouss crawny sun bite sized notice whip savor vagabond";
-        Address1 = "asdlfkjhasd9f8asdf8hasdf8h9in98hf9e8wf98efw9ie9incehf9widjeis9is9dif9isd";
-        Address2 = "98sdhf9je988w9uecje9esi9ixmz9mciqoeitud9siewueinflkjsdfhieuhijviurgrudid";
+        var response = await _mediator.Send(new GenerateWallet.GenerateWalletCommand(24));
+        Mnemonic = response.Mnemonic.Words;
+        Address1 = response.Address1.ToString();
+        Address2 = response.Address2.ToString();
     }
 
     private SendFormRequest formRequest = new SendFormRequest();
