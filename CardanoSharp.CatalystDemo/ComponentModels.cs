@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CardanoSharp.Wallet.Models.Addresses;
+using CardanoSharp.Wallet.Models.Keys;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CardanoSharp.CatalystDemo
@@ -6,9 +8,16 @@ namespace CardanoSharp.CatalystDemo
     public class SendFormRequest
     {
         [Required]
-        public string Address { get; set; }
-
+        public string FromKeys { get; set; }
         [Required]
-        public int Amount { get; set; }
+        public string ToAddress { get; set; }
+        [Required]
+        public decimal Amount { get; set; }
+    }
+
+    public class RestoreWalletRequest
+    {
+        [Required]
+        public string Words { get; set; }
     }
 }

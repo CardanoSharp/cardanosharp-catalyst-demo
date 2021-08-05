@@ -1,30 +1,71 @@
 ﻿@page "/index.html"
+@using CardanoSharp.Wallet.Models.Addresses;
+@using CardanoSharp.Wallet.Models.Keys;
+@using CardanoSharp.Wallet.Models;
 @using CardanoSharp.CatalystDemo
 @using CardanoSharp.CatalystDemo.Commands;
 @using CardanoSharp.CatalystDemo.Queries;
+@using CardanoSharp.CatalystDemo.Models;
 @inject MediatR.IMediator _mediator
 
 <div class="d-flex flex-column align-items-center ">
     <div class="pt-5">
         <h1 class="light-text">Cardano Sharp Demo</h1>
     </div>
-    <Button Theme="secondary" Text="Generate Wallet" OnClick="GetMnemonic" />
+    <Card Title="Restore Wallet" Classes="border-accent shadow-sm mb-2 mt-3 text-center">
+        <div style="width:500px">
+            <EditForm Model="@restoreForm" OnValidSubmit="@RestoreWallet">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-    @if (Mnemonic != "")
+                <div class="form-group text-left">
+                    <label>Mnemonic</label>
+                    <InputText class="form-control" @bind-Value="restoreForm.Words" />
+                </div>
+                <Button Theme="primary" Text="Restore" Type="submit" IsDisabled="@isLoading" />
+            </EditForm>
+        </div>
+    </Card>
+    <Button Theme="secondary" Text="Generate Wallet" OnClick="GenerateMnemonic" IsDisabled="@isLoading" />
+    <hr />
+    @if (Mnemonic != null)
     {
         <Card Title="Mnemonic Generated" Classes="border-accent shadow-sm mb-2 mt-3 text-center">
             <div style="width:500px">
-                @Mnemonic
+                @Mnemonic.Words
             </div>
         </Card>
+        <Button Theme="secondary" Text="Refresh UTXOs" OnClick="GetUtxos" />
         <Card Title="Address 1" Classes="border-accent shadow-sm mb-2 mt-2 text-center">
             <div class="font-size-sm" style="width:500px">
-                @Address1
+                @Keys1.Item3.ToString()
+                @if (Utxos1.Any())
+                {
+                    foreach (var utxo in Utxos1)
+                    {
+                        <p style="border: 3px dashed purple;padding:3px;text-align:left">
+                            TxHash: @utxo.TxHash
+                            <br />TxId: @utxo.TxId
+                            <br />Amount: @GetFormattedAmount(utxo)
+                        </p>
+                    }
+                }
             </div>
         </Card>
         <Card Title="Address 2" Classes="border-accent shadow-sm mb-2 mt-2 text-center">
             <div class="font-size-sm" style="width:500px">
-                @Address2
+                @Keys2.Item3.ToString()
+                @if (Utxos2.Any())
+                {
+                    foreach (var utxo in Utxos2)
+                    {
+                        <p style="border: 3px dashed purple;padding:3px;text-align:left">
+                            TxHash: @utxo.TxHash
+                            <br />TxId: @utxo.TxId
+                            <br />Amount: @GetFormattedAmount(utxo)
+                        </p>
+                    }
+                }
             </div>
         </Card>
         <Card Title="Send" Classes="border-accent shadow-sm mb-5 mt-2 text-center">
@@ -34,8 +75,15 @@
                     <ValidationSummary />
 
                     <div class="form-group text-left">
-                        <label>Address</label>
-                        <InputText class="form-control" @bind-Value="formRequest.Address" />
+                        <label>Sending Address</label>
+                        <InputSelect class="form-control" @bind-Value="formRequest.FromKeys">
+                            <option value="1">@Keys1.Item3.ToString()</option>
+                            <option value="2">@Keys2.Item3.ToString()</option>
+                        </InputSelect>
+                    </div>
+                    <div class="form-group text-left">
+                        <label>Receiving Address</label>
+                        <InputText class="form-control" @bind-Value="formRequest.ToAddress" />
                     </div>
                     <div class="form-group text-left">
                         <label>Amount</label>
@@ -43,10 +91,10 @@
                     </div>
                     <Button Theme="primary" Text="Submit" Type="submit" />
                 </EditForm>
-                @if (Transaction != "")
+                @if (TransactionId != "")
                 {
                     <div class="pt-3">
-                        @Transaction
+                        <a target="_blank" href="@TransactionUrl">@TransactionId</a>
                     </div>
                 }
             </div>
@@ -57,24 +105,63 @@
 
 @code {
 
-    private string Mnemonic = "";
-    private string Address1 = "addr_test1qqdpfnz4djvmn3xq43axkk4k0w82lthg96ugj7mqax4nv8k72mdkchnaw4fa56tyezlplr3sy54w9kwmps4psycarnysq0tccy";
-    private string Address2 = "";
-    private string Transaction = "";
+    private bool isLoading = false;
 
-    private async Task GetMnemonic()
+    private Mnemonic Mnemonic = null;
+    private (PrivateKey, PublicKey, Address) Keys1 = (null, null, null);
+    private (PrivateKey, PublicKey, Address) Keys2 = (null, null, null);
+    private List<Utxo> Utxos1 = new List<Utxo>();
+    private List<Utxo> Utxos2 = new List<Utxo>();
+    private string TransactionId = string.Empty;
+    private string TransactionUrl = string.Empty;
+
+    private async Task GenerateMnemonic()
     {
         var response = await _mediator.Send(new GenerateWallet.GenerateWalletCommand(24));
-        Mnemonic = response.Mnemonic.Words;
-        Address1 = response.Address1.ToString();
-        Address2 = response.Address2.ToString();
+        Mnemonic = response.Mnemonic;
+        Keys1 = response.Key1;
+        Keys2 = response.Key2;
     }
+
+    private async Task RestoreWallet()
+    {
+        var response = await _mediator.Send(new RestoreWallet.RestoreWalletCommand(restoreForm.Words));
+        Mnemonic = response.Mnemonic;
+        Keys1 = response.Key1;
+        Keys2 = response.Key2;
+    }
+
+
+    private async Task GetUtxos()
+    {
+        var response = await _mediator.Send(new GetUtxos.GetUtxosQuery(Keys1.Item3.ToString(), Keys2.Item3.ToString()));
+        Utxos1 = response.Utxos1;
+        Utxos2 = response.Utxos2;
+    }
+
+    private RestoreWalletRequest restoreForm = new RestoreWalletRequest();
 
     private SendFormRequest formRequest = new SendFormRequest();
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
-        // Process the valid form
-        Transaction = "https://link-to-transaction-on-explorer";
+        (PrivateKey, PublicKey, Address) fromKey;
+        if (formRequest.FromKeys == "1")
+            fromKey = Keys1;
+        else
+            fromKey = Keys2;
+
+        var response = await _mediator.Send(new SendAda.SendAdaCommand(fromKey, formRequest.ToAddress, formRequest.Amount));
+        TransactionId = response.TransactionId;
+        TransactionUrl = $"https://explorer.cardano-testnet.iohkdev.io/en/transaction?id={TransactionId}";
+    }
+
+    private string GetFormattedAmount(Utxo utxo)
+    {
+        var lovelaces = utxo.Amount.FirstOrDefault(x => x.Unit == "lovelace")?.Quantity;
+        if (!lovelaces.HasValue) return "";
+
+        var ada = lovelaces.Value / 1000000;
+        return $"{ada} ADA";
     }
 }

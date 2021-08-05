@@ -1,5 +1,5 @@
 ﻿
-<button class="btn btn-lg btn-@Theme shadow cursor-pointer mt-3 @Classes" @onclick="OnClick" type="@Type">
+<button class="btn btn-lg btn-@Theme shadow cursor-pointer mt-3 @Classes" @onclick="OnClick" type="@Type" disabled="@IsDisabled">
     @Text
 </button>
 
@@ -20,4 +20,6 @@
     [Parameter]
     public EventCallback OnClick { get; set; }
 
+    [Parameter]
+    public bool IsDisabled { get; set; }
 }

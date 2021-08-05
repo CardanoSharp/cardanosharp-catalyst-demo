@@ -15,12 +15,14 @@ namespace CardanoSharp.CatalystDemo.Queries
     {
         public class GetUtxosQuery : IRequest<GetUtxosResponse>
         {
-            public GetUtxosQuery(string address)
+            public GetUtxosQuery(string address1, string address2)
             {
-                Address = address;
+                Address1 = address1;
+                Address2 = address2;
             }
 
-            public string Address { get; private set; }
+            public string Address1 { get; private set; }
+            public string Address2 { get; private set; }
         }
 
         /// <summary>
@@ -36,22 +38,36 @@ namespace CardanoSharp.CatalystDemo.Queries
 
             public async Task<GetUtxosResponse> Handle(GetUtxosQuery request, CancellationToken cancellationToken)
             {
-                var url = $"https://cardano-testnet.blockfrost.io/api/v0/addresses/{request.Address}/utxos";
+                List<Utxo> utxos1 = new List<Utxo>();
+                List<Utxo> utxos2 = new List<Utxo>();
+                try
+                {
+                    utxos1 = await $"https://cardano-testnet.blockfrost.io/api/v0/addresses/{request.Address1}/utxos"
+                        .WithHeader("project_id", blockfrostApiKey)
+                        .GetJsonAsync<List<Utxo>>();
+                }
+                catch (Exception) { }
 
-                var utxos = await url
-                    .WithHeader("project_id", blockfrostApiKey)
-                    .GetJsonAsync<List<Utxo>>();
+                try
+                {
+                    utxos2 = await $"https://cardano-testnet.blockfrost.io/api/v0/addresses/{request.Address2}/utxos"
+                        .WithHeader("project_id", blockfrostApiKey)
+                        .GetJsonAsync<List<Utxo>>();
+                }
+                catch (Exception) { }
 
                 return new GetUtxosResponse()
                 {
-                    Utxos = utxos
+                    Utxos1 = utxos1,
+                    Utxos2 = utxos2
                 };
             }
         }
 
         public class GetUtxosResponse
         {
-            public List<Utxo> Utxos { get; set; }
+            public List<Utxo> Utxos1 { get; set; }
+            public List<Utxo> Utxos2 { get; set; }
         }
     }
 }

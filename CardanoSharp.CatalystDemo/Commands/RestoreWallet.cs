@@ -13,32 +13,32 @@ using CardanoSharp.Wallet.Enums;
 
 namespace CardanoSharp.CatalystDemo.Commands
 {
-    public static class GenerateWallet
+    public static class RestoreWallet
     {
-        public class GenerateWalletCommand: IRequest<GenerateWalletResponse>
+        public class RestoreWalletCommand: IRequest<RestoreWalletResponse>
         {
-            public int Size { get; private set; }
+            public string Words { get; private set; }
 
-            public GenerateWalletCommand(int size)            
+            public RestoreWalletCommand(string words)            
             {
-                Size = size;
+                Words = words;
             }
         }
 
-        public class GenerateWalletHandler : IRequestHandler<GenerateWalletCommand, GenerateWalletResponse>
+        public class RestoreWalletHandler : IRequestHandler<RestoreWalletCommand, RestoreWalletResponse>
         {
             private IKeyService _keyService;
             private IAddressService _addressService;
 
-            public GenerateWalletHandler(IKeyService keyService, IAddressService addressService)
+            public RestoreWalletHandler(IKeyService keyService, IAddressService addressService)
             {
                 _keyService = keyService;
                 _addressService = addressService;
             }
 
-            public async Task<GenerateWalletResponse> Handle(GenerateWalletCommand request, CancellationToken cancellationToken)
+            public async Task<RestoreWalletResponse> Handle(RestoreWalletCommand request, CancellationToken cancellationToken)
             {
-                var mnemonic = _keyService.Generate(request.Size);
+                var mnemonic = _keyService.Restore(request.Words);
 
                 var account = mnemonic.GetMasterNode()
                     .Derive(PurposeType.Shelley)
@@ -63,7 +63,7 @@ namespace CardanoSharp.CatalystDemo.Commands
                 var address1 = _addressService.GetAddress(key1.PublicKey, stake.PublicKey, NetworkType.Testnet, AddressType.Base);
                 var address2 = _addressService.GetAddress(key2.PublicKey, stake.PublicKey, NetworkType.Testnet, AddressType.Base);
 
-                return new GenerateWalletResponse()
+                return new RestoreWalletResponse()
                 {
                     Mnemonic = mnemonic,
                     Key1 = (key1.PrivateKey, key1.PublicKey, address1),
@@ -72,7 +72,7 @@ namespace CardanoSharp.CatalystDemo.Commands
             }
         }
 
-        public class GenerateWalletResponse
+        public class RestoreWalletResponse
         {
             public Mnemonic Mnemonic { get; set; }
             public (PrivateKey, PublicKey, Address) Key1 { get; set; }
