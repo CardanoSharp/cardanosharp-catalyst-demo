@@ -17,6 +17,9 @@ using Flurl.Http;
 using CardanoSharp.Wallet.Models.Transactions;
 using System.Net;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using CardanoSharp.Wallet.Encoding;
 
 namespace CardanoSharp.CatalystDemo.Commands
 {
@@ -64,11 +67,12 @@ namespace CardanoSharp.CatalystDemo.Commands
 
                 //build inputs
                 var inputs = new List<TransactionInput>();
-                long totalSending = 0;
+                decimal totalSending = 0;
                 foreach(var utxo in utxos)
                 {
                     var lovelaces = utxo.Amount.FirstOrDefault(x => x.Unit == "lovelace")?.Quantity;
-                    if (!lovelaces.HasValue) continue; 
+                    if (!lovelaces.HasValue) continue;
+
 
                     var ada = lovelaces.Value / 1000000;
 
@@ -85,16 +89,25 @@ namespace CardanoSharp.CatalystDemo.Commands
                         break;
                     }
                 }
+                totalSending = totalSending - request.Amount;
 
                 //build outputs
                 var outputs = new List<TransactionOutput>()
                 {
                     new TransactionOutput()
                     {
-                        Address = request.ToAddress.HexToByteArray(),
+                        Address = Bech32.Decode(request.ToAddress, out _, out _),
                         Value = new TransactionOutputValue()
                         {
                             Coin = (uint)(request.Amount * 1000000)
+                        }
+                    },
+                    new TransactionOutput()
+                    {
+                        Address = request.FromKeys.Item3.GetBytes(),
+                        Value = new TransactionOutputValue()
+                        {
+                            Coin = (uint)(totalSending * 1000000)
                         }
                     }
                 };
@@ -104,7 +117,7 @@ namespace CardanoSharp.CatalystDemo.Commands
                     TransactionInputs = inputs,
                     TransactionOutputs = outputs,
                     Fee = 0,
-                    Ttl = 1000
+                    Ttl = 33814067
                 };
 
                 var witnesses = new TransactionWitnessSet()
@@ -128,39 +141,31 @@ namespace CardanoSharp.CatalystDemo.Commands
                 var draftTx = _transactionBuilder.SerializeTransaction(transaction);
                 var newFee = calculateFee(draftTx);
 
-                transactionBody.TransactionOutputs.First().Value.Coin -= (uint)newFee;
+                transactionBody.TransactionOutputs.Last().Value.Coin -= (uint)newFee;
                 transactionBody.Fee = (uint)newFee;
                 Console.WriteLine($"Fee: {newFee}");
                 var signedTx = _transactionBuilder.SerializeTransaction(transaction);
 
+                Console.WriteLine($"Signed Tx: {signedTx.ToStringHex()}");
                 string transactionResult = string.Empty;
                 try
                 {
-                    // Prepare web request...
-                    HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create("https://cardano-testnet.blockfrost.io/api/v0/tx/submit");
-                    webRequest.Method = "POST";
-                    webRequest.ContentType = "application/cbor";
-                    webRequest.Headers["project_id"] = blockfrostApiKey;
-                    webRequest.ContentLength = signedTx.Length;
-                    using (Stream postStream = webRequest.GetRequestStream())
-                    {
-                        // Send the data.
-                        postStream.Write(signedTx, 0, signedTx.Length);
-                        postStream.Close();
-                    }
+                    var url = "https://cardano-testnet.blockfrost.io/api/v0/tx/submit";
+                    var httpClient = new HttpClient();
+                    HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Post, url);
+                    httpRequest.Content = new ByteArrayContent(signedTx);
+                    httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/cbor");
+                    httpRequest.Content.Headers.Add("project_id", "VLvo7vf4Xyv07DhymwK0ss7qWjiO2DKw");
+                    var response = httpClient.SendAsync(httpRequest).Result;
 
-                    var response = await webRequest.GetResponseAsync();
-                    using (var reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        transactionResult = reader.ReadToEnd(); // do something fun...
-                    }
+                    transactionResult = response.Content.ReadAsStringAsync().Result;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     Console.WriteLine(e.StackTrace);
                 }
-
+                Console.WriteLine($"Tx ID: {transactionResult}");
                 return new SendAdaResponse()
                 {
                     TransactionId = transactionResult
