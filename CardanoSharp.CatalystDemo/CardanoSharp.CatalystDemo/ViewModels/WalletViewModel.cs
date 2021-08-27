@@ -16,25 +16,27 @@ namespace CardanoSharp.CatalystDemo.ViewModels
         public Command SubmitTx { get; }
 
         private readonly IWalletService _walletService;
+        private readonly IBlockfrostService _blockfrostService;
 
-        public WalletViewModel(IWalletService walletService)
+        public WalletViewModel(IWalletService walletService, IBlockfrostService blockfrostService)
         {
-
+            _walletService = walletService;
+            _blockfrostService = blockfrostService;
         }
 
         private async void OnGenerateWallet()
         {
-
+            var mnemonic = _walletService.GenerateMnemonic(15);
         }
 
         private async void OnRestoreWallet()
         {
-
+            var mnemonic = _walletService.RestoreMnemonic("");
         }
 
         public async void OnRefreshUtxos()
         {
-
+            var utxos = _blockfrostService.GetUtxos("");
         }
 
         public async void OnSubmitTx()
