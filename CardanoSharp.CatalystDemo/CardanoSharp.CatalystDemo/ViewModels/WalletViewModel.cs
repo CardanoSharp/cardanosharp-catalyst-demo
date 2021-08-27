@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CardanoSharp.CatalystDemo.Services;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms;
@@ -14,7 +15,9 @@ namespace CardanoSharp.CatalystDemo.ViewModels
         public Command RefreshUtxos { get; }
         public Command SubmitTx { get; }
 
-        public WalletViewModel()
+        private readonly IWalletService _walletService;
+
+        public WalletViewModel(IWalletService walletService)
         {
 
         }

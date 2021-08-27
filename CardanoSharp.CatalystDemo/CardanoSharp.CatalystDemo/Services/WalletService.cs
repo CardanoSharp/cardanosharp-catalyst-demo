@@ -12,21 +12,38 @@ using System.Threading.Tasks;
 
 namespace CardanoSharp.CatalystDemo.Services
 {
-    public interface IWalletDataStore
+    public interface IWalletService
     {
         Task<Address> GetAddress(IAccountNodeDerivation accountNode, int index);
         Task<PrivateKey> GetPrivateKey(IAccountNodeDerivation accountNode, int index);
         Task<PublicKey> GetPublicKey(IAccountNodeDerivation accountNode, int index);
         Task<PublicKey> GetPublicKey(PrivateKey privateKey);
+        Task<Mnemonic> GenerateMnemonic(int size);
+        Task<Mnemonic> RestoreMnemonic(string words);
     }
 
-    public class WalletService : IWalletDataStore
+    public class WalletService : IWalletService
     {
         private readonly IAddressService _addressService;
+        private readonly IKeyService _keyService;
+        private readonly IWalletStore _walletStore;
 
-        public WalletService(IAddressService addressService)
+        public WalletService(
+            IAddressService addressService, 
+            IKeyService keyService,
+            IWalletStore walletStore)
         {
             _addressService = addressService;
+            _keyService = keyService;
+            _walletStore = walletStore;
+        }
+
+        public async Task<Mnemonic> GenerateMnemonic(int size)
+        {
+            var mnemonic = _keyService.Generate(size);
+            _walletStore.SetAccountKeys(mnemonic);
+
+            return await Task.FromResult(mnemonic);
         }
 
         public async Task<Address> GetAddress(IAccountNodeDerivation accountNode, int index)
@@ -72,6 +89,14 @@ namespace CardanoSharp.CatalystDemo.Services
             var publicKey = privateKey.GetPublicKey(false);
 
             return await Task.FromResult(publicKey);
+        }
+
+        public async Task<Mnemonic> RestoreMnemonic(string words)
+        {
+            var mnemonic = _keyService.Restore(words);
+            _walletStore.SetAccountKeys(mnemonic);
+
+            return await Task.FromResult(mnemonic);
         }
     }
 }
