@@ -16,7 +16,7 @@ namespace CardanoSharp.CatalystDemo.Services
     {
         Task<Address> GetAddress(IAccountNodeDerivation accountNode, int index);
         Task<PrivateKey> GetPrivateKey(IAccountNodeDerivation accountNode, int index);
-        Task<PublicKey> GetPublicKey(IAccountNodeDerivation accountNode, int index);
+        Task<KeyPair> GetKeyPair(IAccountNodeDerivation accountNode, int index);
         Task<PublicKey> GetPublicKey(PrivateKey privateKey);
         Task<Mnemonic> GenerateMnemonic(int size);
         Task<Mnemonic> RestoreMnemonic(string words);
@@ -26,22 +26,18 @@ namespace CardanoSharp.CatalystDemo.Services
     {
         private readonly IAddressService _addressService;
         private readonly IKeyService _keyService;
-        private readonly IWalletStore _walletStore;
 
         public WalletService(
             IAddressService addressService, 
-            IKeyService keyService,
-            IWalletStore walletStore)
+            IKeyService keyService)
         {
             _addressService = addressService;
             _keyService = keyService;
-            _walletStore = walletStore;
         }
 
         public async Task<Mnemonic> GenerateMnemonic(int size)
         {
             var mnemonic = _keyService.Generate(size);
-            _walletStore.SetAccountKeys(mnemonic);
 
             return await Task.FromResult(mnemonic);
         }
@@ -73,15 +69,15 @@ namespace CardanoSharp.CatalystDemo.Services
             return await Task.FromResult(privateKey);
         }
 
-        public async Task<PublicKey> GetPublicKey(IAccountNodeDerivation accountNode, int index)
+        public async Task<KeyPair> GetKeyPair(IAccountNodeDerivation accountNode, int index)
         {
             var privateKey = accountNode
                 .Derive(RoleType.ExternalChain)
                 .Derive(index)
                 .PrivateKey;
-            var publicKey = privateKey.GetPublicKey(false);
+            var keyPair = new KeyPair(privateKey, privateKey.GetPublicKey(false));
 
-            return await Task.FromResult(publicKey);
+            return await Task.FromResult(keyPair);
         }
 
         public async Task<PublicKey> GetPublicKey(PrivateKey privateKey)
@@ -94,7 +90,6 @@ namespace CardanoSharp.CatalystDemo.Services
         public async Task<Mnemonic> RestoreMnemonic(string words)
         {
             var mnemonic = _keyService.Restore(words);
-            _walletStore.SetAccountKeys(mnemonic);
 
             return await Task.FromResult(mnemonic);
         }

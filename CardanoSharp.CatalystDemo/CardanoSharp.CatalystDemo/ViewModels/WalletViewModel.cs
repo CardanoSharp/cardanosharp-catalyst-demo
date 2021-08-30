@@ -10,6 +10,8 @@ namespace CardanoSharp.CatalystDemo.ViewModels
     {
         private string mnemonicWords;
 
+        public SendForm SendForm { get; set; }
+
         public Command GenerateWallet { get; }
         public Command RestoreWallet { get; }
         public Command RefreshUtxos { get; }
@@ -17,21 +19,31 @@ namespace CardanoSharp.CatalystDemo.ViewModels
 
         private readonly IWalletService _walletService;
         private readonly IBlockfrostService _blockfrostService;
+        private readonly ITransactionService _transactionService;
 
-        public WalletViewModel(IWalletService walletService, IBlockfrostService blockfrostService)
+        private readonly IWalletStore _walletStore;
+
+        public WalletViewModel(IWalletService walletService, 
+            IBlockfrostService blockfrostService, 
+            ITransactionService transactionService,
+            IWalletStore walletStore)
         {
             _walletService = walletService;
             _blockfrostService = blockfrostService;
+            _transactionService = transactionService;
+            _walletStore = walletStore;
         }
 
         private async void OnGenerateWallet()
         {
-            var mnemonic = _walletService.GenerateMnemonic(15);
+            var mnemonic = await _walletService.GenerateMnemonic(15);
+            _walletStore.SetAccountKeys(mnemonic);
         }
 
         private async void OnRestoreWallet()
         {
-            var mnemonic = _walletService.RestoreMnemonic("");
+            var mnemonic = await _walletService.RestoreMnemonic("");
+            _walletStore.SetAccountKeys(mnemonic);
         }
 
         public async void OnRefreshUtxos()
@@ -41,7 +53,25 @@ namespace CardanoSharp.CatalystDemo.ViewModels
 
         public async void OnSubmitTx()
         {
+            var keyPair = await _walletService.GetKeyPair(_walletStore.AccountKeys, 0);
 
+            var request = new SendRequest()
+            {
+                Amount = SendForm.Amount,
+                RecieverAddress = SendForm.RecieverAddress,
+                SenderAddress = SendForm.SenderAddress,
+                Message = SendForm.Message
+            };
+
+            var transaction = await _transactionService.Send(request, keyPair);
         }
+    }
+
+    public class SendForm
+    {
+        public string SenderAddress { get; set; }
+        public string RecieverAddress { get; set; }
+        public decimal Amount { get; set; }
+        public string Message { get; set; }
     }
 }
