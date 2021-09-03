@@ -1,4 +1,5 @@
-﻿using CardanoSharp.Wallet.Extensions;
+﻿using CardanoSharp.CatalystDemo.Services;
+using CardanoSharp.Wallet.Extensions;
 using CardanoSharp.Wallet.Extensions.Models.Transactions;
 using CardanoSharp.Wallet.Models.Addresses;
 using CardanoSharp.Wallet.Models.Keys;
@@ -9,7 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
+[assembly: Dependency(typeof(TransactionService))]
 namespace CardanoSharp.CatalystDemo.Services
 {
     public interface ITransactionService
@@ -36,10 +39,10 @@ namespace CardanoSharp.CatalystDemo.Services
         private readonly IBlockfrostService _blockfrostService;
         private readonly IWalletStore _walletStore;
 
-        public TransactionService(IBlockfrostService blockfrostService, IWalletStore walletStore)
+        public TransactionService()
         {
-            _blockfrostService = blockfrostService;
-            _walletStore = walletStore;
+            _blockfrostService = DependencyService.Get<IBlockfrostService>();
+            _walletStore = DependencyService.Get<IWalletStore>();
         }
 
         public async Task<SendResponse> Send(SendRequest request, KeyPair keyPair)

@@ -9,9 +9,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
+[assembly: Dependency(typeof(WalletService))]
 namespace CardanoSharp.CatalystDemo.Services
 {
+    
     public interface IWalletService
     {
         Task<Address> GetAddress(IAccountNodeDerivation accountNode, int index);

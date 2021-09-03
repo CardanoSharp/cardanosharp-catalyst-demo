@@ -1,7 +1,9 @@
 ﻿using CardanoSharp.CatalystDemo.Services;
 using CardanoSharp.CatalystDemo.Views;
 using System;
+using System.ComponentModel;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 namespace CardanoSharp.CatalystDemo
@@ -28,5 +30,6 @@ namespace CardanoSharp.CatalystDemo
         protected override void OnResume()
         {
         }
+
     }
 }

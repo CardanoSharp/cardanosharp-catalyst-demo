@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CardanoSharp.CatalystDemo.Views.WalletPage"
+             xmlns:vm="clr-namespace:CardanoSharp.CatalystDemo.ViewModels"
+             Title="Sharp Wallet">
+    
+    <ContentPage.BindingContext>
+        <vm:WalletViewModel/>
+    </ContentPage.BindingContext>
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#96d1ff</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <ScrollView BackgroundColor="#f2f5f7" Grid.Row="1">
+            <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
+                <StackLayout Orientation="Vertical"  Spacing="10">
+                    <Button
+                        Command="{Binding GenerateWallet}"
+                        Margin="0,10,0,0" Text="Generate Wallet"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White" />
+                    <Label Text="Restore Wallet" FontSize="16" Padding="30,0,0,0"/>
+                    <Entry Text="{Binding RestoreForm.Words}"/>
+                    <Button
+                        Command="{Binding GenerateWallet}"
+                        Margin="0,10,0,0" Text="Restore Wallet"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White" />
+                </StackLayout>
+                <StackLayout  Orientation="Vertical" Padding="0,50,0,0" Spacing="5">
+                    <Label Text="Mnemonic" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                    <Label Text="{Binding Mnemonic.Words}" FontSize="16" Padding="0,0,0,0"/>
+                </StackLayout>
+                <!--<StackLayout IsVisible="{Binding WalletCreated}" Orientation="Vertical" Padding="0,50,0,0" Spacing="10">
+                    <Label Text="Send Ada" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                    <Label Text="Send to" FontSize="16" Padding="0,0,0,0"/>
+                    <Entry Text="{Binding SendToAddress}"/>
+                    <Label Text="Amount" FontSize="16" Padding="0,0,0,0"/>
+                    <Entry Text="{Binding SendToAmount}"/>
+                    <Button
+                        Command="{Binding CreateTransaction}"
+                        Margin="0,10,0,0" Text="Send Ada"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White" />
+                    <Label Text="{Binding TransactionLink}" FontSize="16" Padding="0,0,0,0"/>
+                </StackLayout>-->
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

@@ -1,4 +1,5 @@
 ﻿using CardanoSharp.CatalystDemo.Models;
+using CardanoSharp.CatalystDemo.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
+[assembly: Dependency(typeof(BlockfrostService))]
 namespace CardanoSharp.CatalystDemo.Services
 {
     public interface IBlockfrostService

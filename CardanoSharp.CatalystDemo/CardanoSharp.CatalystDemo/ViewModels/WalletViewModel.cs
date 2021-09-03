@@ -9,8 +9,19 @@ using Xamarin.Forms;
 
 namespace CardanoSharp.CatalystDemo.ViewModels
 {
-    public class WalletViewModel : BaseViewModel
+    public class WalletViewModel : BindableObject
     {
+
+        public WalletViewModel()
+        {
+            _walletService = DependencyService.Get<IWalletService>();
+            _blockfrostService = DependencyService.Get<IBlockfrostService>();
+            _transactionService = DependencyService.Get<ITransactionService>();
+            _walletStore = DependencyService.Get<IWalletStore>();
+
+            GenerateWallet = new Command(OnGenerateWallet) ;
+        }
+
         //This holds the Address we use to Send and Receive ADA
         public Address Address { get; set; }
         //This holds our Mnemonic for display
@@ -35,19 +46,7 @@ namespace CardanoSharp.CatalystDemo.ViewModels
         private readonly IWalletService _walletService;
         private readonly IBlockfrostService _blockfrostService;
         private readonly ITransactionService _transactionService;
-
         private readonly IWalletStore _walletStore;
-
-        public WalletViewModel(IWalletService walletService, 
-            IBlockfrostService blockfrostService, 
-            ITransactionService transactionService,
-            IWalletStore walletStore)
-        {
-            _walletService = walletService;
-            _blockfrostService = blockfrostService;
-            _transactionService = transactionService;
-            _walletStore = walletStore;
-        }
 
         public async void OnGenerateWallet()
         {
@@ -89,7 +88,7 @@ namespace CardanoSharp.CatalystDemo.ViewModels
         }
     }
 
-    public class SendForm
+    public class SendForm : BindableObject
     {
         public string SenderAddress { get; set; }
         public string RecieverAddress { get; set; }
@@ -97,8 +96,20 @@ namespace CardanoSharp.CatalystDemo.ViewModels
         public string Message { get; set; }
     }
 
-    public class RestoreForm
+    public class RestoreForm : BindableObject
     { 
-        public string Words { get; set; }
+        //public string Words { get; set; }
+        string _words = "";
+        public string Words
+        {
+            get => _words;
+            set
+            {
+                if (value == _words)
+                    return;
+                _words = value;
+                OnPropertyChanged(nameof(Words));
+            }
+        }
     }
 }
