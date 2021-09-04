@@ -12,7 +12,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(TransactionService))]
 namespace CardanoSharp.CatalystDemo.Services
 {
     public interface ITransactionService

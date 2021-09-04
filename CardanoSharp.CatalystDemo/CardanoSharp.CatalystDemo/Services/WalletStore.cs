@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(WalletStore))]
 namespace CardanoSharp.CatalystDemo.Services
 {
     public interface IWalletStore

@@ -26,21 +26,111 @@
                 <StackLayout Orientation="Vertical"  Spacing="10">
                     <Button
                         Command="{Binding GenerateWallet}"
-                        Margin="0,10,0,0" Text="Generate Wallet"
+                        Margin="0,10,0,0" Text="Generate New Wallet"
                         BackgroundColor="{StaticResource Primary}"
                         TextColor="White" />
-                    <Label Text="Restore Wallet" FontSize="16" Padding="30,0,0,0"/>
+                    <Label Text="OR" FontAttributes="Bold" HorizontalTextAlignment="Center" FontSize="16" Padding="0,20,0,0"/>
+                    <Label Text="Restore Wallet" FontSize="16"  Padding="0,20,0,0"/>
                     <Entry Text="{Binding RestoreForm.Words}"/>
                     <Button
-                        Command="{Binding GenerateWallet}"
+                        Command="{Binding RestoreWallet}"
                         Margin="0,10,0,0" Text="Restore Wallet"
                         BackgroundColor="{StaticResource Primary}"
                         TextColor="White" />
                 </StackLayout>
-                <StackLayout  Orientation="Vertical" Padding="0,50,0,0" Spacing="5">
-                    <Label Text="Mnemonic" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
-                    <Label Text="{Binding Mnemonic.Words}" FontSize="16" Padding="0,0,0,0"/>
+                <StackLayout IsVisible="{Binding WalletCreated}">
+                    <StackLayout  Orientation="Vertical" Padding="0,50,0,0" Spacing="5">
+                        <Label Text="Mnemonic" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Label Text="{Binding Mnemonic.Words}" FontSize="16" Padding="0,0,0,0"/>
+                    </StackLayout>
+                    <StackLayout  Orientation="Vertical" Padding="0,50,0,0" Spacing="5">
+                        <Label Text="Address" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Label Text="{Binding Address}" FontSize="16" Padding="0,0,0,0"/>
+                    </StackLayout>
+                    <StackLayout VerticalOptions="FillAndExpand" Orientation="Vertical" Padding="0,50,0,0" Spacing="5">
+                        <Label Text="UTXO's" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Button
+                            Command="{Binding RefreshUtxos}"
+                            Margin="0,10,0,10" Text="Refresh UTXO's"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+                        <ScrollView BackgroundColor="#f2f5f7" Grid.Row="1" >
+                            <StackLayout HeightRequest="300">
+                                <ListView
+                                    ItemsSource="{Binding Utxos}"
+                                    RowHeight="200"
+                                >
+                                  <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <ViewCell Height="200">
+                                            <StackLayout
+                                                BackgroundColor="#eee"
+                                                Orientation="Vertical"
+                                                VerticalOptions="FillAndExpand"
+                                            >
+                                                <StackLayout VerticalOptions="FillAndExpand">
+                                                     <StackLayout VerticalOptions="FillAndExpand" Orientation="Horizontal">
+                                                        <Label Text="Tx Id"/>
+                                                    </StackLayout>
+                                                    <StackLayout VerticalOptions="FillAndExpand" Orientation="Horizontal">
+                                                        <Label Text="{Binding TxId}"
+                                                        TextColor="#503026" />
+                                                    </StackLayout>
+                                                </StackLayout>
+                                               <StackLayout VerticalOptions="FillAndExpand">
+                                                     <StackLayout Orientation="Horizontal">
+                                                        <Label Text="Block" />
+                                                    </StackLayout>
+                                                    <StackLayout Orientation="Horizontal">
+                                                        <Label Text="{Binding Block}"
+                                                        TextColor="#503026" />
+                                                    </StackLayout>
+                                                </StackLayout>
+                                                <StackLayout VerticalOptions="FillAndExpand">
+                                                     <StackLayout Orientation="Horizontal">
+                                                        <Label Text="Amount"/>
+                                                    </StackLayout>
+                                                    <StackLayout Orientation="Horizontal">
+                                                        <Label Text="{Binding Amount.Capacity}"
+                                                    TextColor="#503026" />
+                                                    </StackLayout>
+                                                </StackLayout>
+                                            </StackLayout>
+                                        </ViewCell>
+                                    </DataTemplate>
+                                  </ListView.ItemTemplate>
+                                </ListView>
+                            </StackLayout>
+                        </ScrollView>
+                    </StackLayout>
                 </StackLayout>
+                
+                <StackLayout  Orientation="Vertical" Padding="0,20,0,20" Spacing="5">
+                    <Label Text="Send Ada" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                    <StackLayout>
+                        <Label Text="Sender Address"  FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Entry Text="{Binding SendForm.SenderAddress}"/>
+                    </StackLayout>
+                    <StackLayout>
+                        <Label Text="Reciever Address"  FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Entry Text="{Binding SendForm.RecieverAddress}"/>
+                    </StackLayout>
+                    <StackLayout>
+                        <Label Text="Amount"  FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Entry Text="{Binding SendForm.Amount}"/>
+                    </StackLayout>
+                    <StackLayout>
+                        <Label Text="Message"  FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Entry Text="{Binding SendForm.Message}"/>
+                    </StackLayout>
+                    <Button
+                        Command="{Binding RefreshUtxos}"
+                        Margin="0,10,0,10" Text="Send"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                    />
+                </StackLayout>
+
                 <!--<StackLayout IsVisible="{Binding WalletCreated}" Orientation="Vertical" Padding="0,50,0,0" Spacing="10">
                     <Label Text="Send Ada" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
                     <Label Text="Send to" FontSize="16" Padding="0,0,0,0"/>

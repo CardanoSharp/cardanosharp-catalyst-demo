@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(WalletService))]
 namespace CardanoSharp.CatalystDemo.Services
 {
     
@@ -30,12 +29,10 @@ namespace CardanoSharp.CatalystDemo.Services
         private readonly IAddressService _addressService;
         private readonly IKeyService _keyService;
 
-        public WalletService(
-            IAddressService addressService, 
-            IKeyService keyService)
+        public WalletService()
         {
-            _addressService = addressService;
-            _keyService = keyService;
+            _addressService = DependencyService.Get<IAddressService>();
+            _keyService = DependencyService.Get<IKeyService>(); ;
         }
 
         public async Task<Mnemonic> GenerateMnemonic(int size)

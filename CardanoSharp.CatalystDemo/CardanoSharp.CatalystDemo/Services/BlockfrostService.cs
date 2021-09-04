@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-[assembly: Dependency(typeof(BlockfrostService))]
 namespace CardanoSharp.CatalystDemo.Services
 {
     public interface IBlockfrostService
@@ -79,7 +78,7 @@ namespace CardanoSharp.CatalystDemo.Services
                 using (var httpClient = new HttpClient())
                 {
                     HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
-                    httpRequest.Content.Headers.Add("project_id", _apiKey);
+                    httpRequest.Headers.Add("project_id", _apiKey);
                     var response = await httpClient.SendAsync(httpRequest);
 
                     return JsonConvert.DeserializeObject<List<Utxo>>(await response.Content.ReadAsStringAsync());
