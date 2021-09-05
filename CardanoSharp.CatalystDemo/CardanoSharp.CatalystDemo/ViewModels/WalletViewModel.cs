@@ -5,6 +5,8 @@ using CardanoSharp.Wallet.Models.Keys;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace CardanoSharp.CatalystDemo.ViewModels
@@ -24,6 +26,7 @@ namespace CardanoSharp.CatalystDemo.ViewModels
             RefreshUtxos = new Command(OnRefreshUtxos);
             GenerateWallet = new Command(OnGenerateWallet);
             RestoreForm = new RestoreForm();
+            SendForm = new SendForm();
         }
 
         bool _walletCreated = false;
@@ -81,10 +84,32 @@ namespace CardanoSharp.CatalystDemo.ViewModels
             }
         }
         //This is the last transaction id
-        public string TransactionId { get; set; }
+        string _transactionId;
+        public string TransactionId
+        {
+            get => _transactionId;
+            set
+            {
+                if (value == _transactionId)
+                    return;
+                _transactionId = value;
+                OnPropertyChanged(nameof(TransactionId));
+            }
+        }
 
         //This is the form object we use to send ADA with Metadata message
-        public SendForm SendForm { get; set; }
+        SendForm _sendForm;
+        public SendForm SendForm
+        {
+            get => _sendForm;
+            set
+            {
+                if (value == _sendForm)
+                    return;
+                _sendForm = value;
+                OnPropertyChanged(nameof(SendForm));
+            }
+        }
         //This is the form object we use to restore an existing wallet
         
         RestoreForm _restoreForm;
@@ -144,7 +169,7 @@ namespace CardanoSharp.CatalystDemo.ViewModels
             {
                 Amount = SendForm.Amount,
                 RecieverAddress = SendForm.RecieverAddress,
-                SenderAddress = SendForm.SenderAddress,
+                SenderAddress = Address.ToString(),
                 Message = SendForm.Message
             };
 
@@ -155,19 +180,6 @@ namespace CardanoSharp.CatalystDemo.ViewModels
 
     public class SendForm : BindableObject
     {
-        string _senderAddress = "";
-        public string SenderAddress
-        {
-            get => _senderAddress;
-            set
-            {
-                if (value == _senderAddress)
-                    return;
-                _senderAddress = value;
-                OnPropertyChanged(nameof(SenderAddress));
-            }
-        }
-
         string _recieverAddress = "";
         public string RecieverAddress
         {
@@ -202,7 +214,7 @@ namespace CardanoSharp.CatalystDemo.ViewModels
             {
                 if (value == _message)
                     return;
-                _recieverAddress = value;
+                _message = value;
                 OnPropertyChanged(nameof(Message));
             }
         }

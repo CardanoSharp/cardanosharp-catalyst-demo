@@ -68,19 +68,9 @@ namespace CardanoSharp.CatalystDemo.Services
             Address reciever = new Address(request.RecieverAddress);
             Address sender = new Address(request.SenderAddress);
             uint adaAmount = (uint)(request.Amount * 1000000);
-            uint change = (uint)(totalSending * 1000000);
-
-            TransactionOutput changeOutput = new TransactionOutput()
-            {
-                Address = sender.GetBytes(),
-                Value = new TransactionOutputValue()
-                {
-                    Coin = change
-                }
-            };
 
             bodyBuilder.AddOutput(reciever.GetBytes(), adaAmount);
-            bodyBuilder.AddOutput(changeOutput.Address, changeOutput.Value.Coin);
+            bodyBuilder.AddOutput(sender.GetBytes(), (uint)totalSending);
 
             //get latest slot
             var slot = await _blockfrostService.GetLatestSlot();
@@ -109,8 +99,8 @@ namespace CardanoSharp.CatalystDemo.Services
 
             //update body and rebuild
             bodyBuilder.SetFee(fee);
-            changeOutput.Value.Coin = changeOutput.Value.Coin - fee;
             transaction = transactionBuilder.Build();
+            transaction.TransactionBody.TransactionOutputs.Last().Value.Coin -= fee;
 
             //serialize the transaction
             var signedTx = transaction.Serialize();
@@ -127,13 +117,14 @@ namespace CardanoSharp.CatalystDemo.Services
         {
             var inputs = new List<TransactionInput>();
             decimal totalSending = 0;
+            sendAmount = sendAmount * 1000000;
             foreach (var utxo in utxos)
             {
                 var lovelaces = utxo.Amount.FirstOrDefault(x => x.Unit == "lovelace")?.Quantity;
                 if (!lovelaces.HasValue) continue;
 
 
-                var ada = lovelaces.Value / 1000000;
+                var ada = lovelaces.Value;
 
                 if (totalSending < sendAmount)
                 {

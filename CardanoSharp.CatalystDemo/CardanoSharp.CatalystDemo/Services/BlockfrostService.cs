@@ -22,7 +22,7 @@ namespace CardanoSharp.CatalystDemo.Services
 
     public class BlockfrostService: IBlockfrostService
     {
-        private readonly string _apiKey = "VLvo7vf4Xyv07DhymwK0ss7qWjiO2DKw";
+        private readonly string _apiKey = "wtaPyfGZu6z0dJXkbZzHYio1A4qkfFKX";
 
         public async Task<int> GetLatestSlot()
         {
@@ -32,7 +32,7 @@ namespace CardanoSharp.CatalystDemo.Services
                 using (var httpClient = new HttpClient())
                 {
                     HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
-                    httpRequest.Content.Headers.Add("project_id", _apiKey);
+                    httpRequest.Headers.Add("project_id", _apiKey);
                     var response = await httpClient.SendAsync(httpRequest);
 
                     Block block = JsonConvert.DeserializeObject<Block>(await response.Content.ReadAsStringAsync());
@@ -55,7 +55,7 @@ namespace CardanoSharp.CatalystDemo.Services
                 using (var httpClient = new HttpClient())
                 {
                     HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
-                    httpRequest.Content.Headers.Add("project_id", _apiKey);
+                    httpRequest.Headers.Add("project_id", _apiKey);
                     var response = await httpClient.SendAsync(httpRequest);
 
                     FeeParameters fee = JsonConvert.DeserializeObject<FeeParameters>(await response.Content.ReadAsStringAsync());
@@ -105,7 +105,8 @@ namespace CardanoSharp.CatalystDemo.Services
                     httpRequest.Content.Headers.Add("project_id", _apiKey);
                     var response = httpClient.SendAsync(httpRequest).Result;
 
-                    return await response.Content.ReadAsStringAsync();
+                    var text = await response.Content.ReadAsStringAsync();
+                    return text;
                 }
             }
             catch (Exception e)
