@@ -92,7 +92,7 @@ namespace CardanoSharp.CatalystDemo.ViewModels
             {
                 if (value == _transactionId)
                     return;
-                _transactionId = value;
+                _transactionId = value.Replace("\"", ""); ;
                 OnPropertyChanged(nameof(TransactionId));
             }
         }

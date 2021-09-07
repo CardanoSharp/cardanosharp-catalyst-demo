@@ -115,10 +115,10 @@
                         <Label.FormattedText>
                             <FormattedString>
                                 <Span Text="Transaction Id: "/>
-                                <Span Text="{Binding TransactionId}" />
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
+                    <Label Text="{Binding TransactionId}"/>
                 </StackLayout>
                 
             </StackLayout>

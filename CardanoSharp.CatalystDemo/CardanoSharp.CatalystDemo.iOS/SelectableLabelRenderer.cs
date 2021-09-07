@@ -56,9 +56,12 @@ namespace CardanoSharp.CatalystDemo.iOS
             {
                 foreach (var item in Element?.FormattedText.Spans)
                 {
-                    Control.AttributedText = new NSAttributedString(NSData.FromString(item.Text),
+                    if (!string.IsNullOrEmpty(item.Text))
+                    {
+                        Control.AttributedText = new NSAttributedString(NSData.FromString(item.Text),
                                                            new NSAttributedStringDocumentAttributes { DocumentType = NSDocumentType.PlainText },
                                                            ref error);
+                    }
                 }
             }
 
