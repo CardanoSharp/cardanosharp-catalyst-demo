@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using System.Linq;
 
 namespace CardanoSharp.CatalystDemo.ViewModels
 {
@@ -23,7 +24,7 @@ namespace CardanoSharp.CatalystDemo.ViewModels
 
             SubmitTx = new Command(OnSubmitTx);
             RestoreWallet = new Command(OnRestoreWallet);
-            RefreshUtxos = new Command(OnRefreshUtxos);
+            GetCurrentBalance = new Command(OnGetCurrentBalance);
             GenerateWallet = new Command(OnGenerateWallet);
             RestoreForm = new RestoreForm();
             SendForm = new SendForm();
@@ -70,19 +71,7 @@ namespace CardanoSharp.CatalystDemo.ViewModels
                 OnPropertyChanged(nameof(Mnemonic));
             }
         }
-        //This is a list of UTXOs that below to our Address
-        List<Utxo> _utxos;
-        public List<Utxo> Utxos
-        {
-            get => _utxos;
-            set
-            {
-                if (value == _utxos)
-                    return;
-                _utxos = value;
-                OnPropertyChanged(nameof(Utxos));
-            }
-        }
+
         //This is the last transaction id
         string _transactionId;
         public string TransactionId
@@ -94,6 +83,20 @@ namespace CardanoSharp.CatalystDemo.ViewModels
                     return;
                 _transactionId = value;
                 OnPropertyChanged(nameof(TransactionId));
+            }
+        }
+        
+        //This is the current balance
+        string _currentBalance;
+        public string CurrentBalance
+        {
+            get => _currentBalance;
+            set
+            {
+                if (value == _currentBalance)
+                    return;
+                _currentBalance = value;
+                OnPropertyChanged(nameof(CurrentBalance));
             }
         }
 
@@ -128,7 +131,7 @@ namespace CardanoSharp.CatalystDemo.ViewModels
 
         public Command GenerateWallet { get; }
         public Command RestoreWallet { get; }
-        public Command RefreshUtxos { get; }
+        public Command GetCurrentBalance { get; }
         public Command SubmitTx { get; }
 
         private readonly IWalletService _walletService;
@@ -154,11 +157,15 @@ namespace CardanoSharp.CatalystDemo.ViewModels
         {
             _walletStore.SetAccountKeys(Mnemonic);
             Address = await _walletService.GetAddress(_walletStore.AccountKeys, 0);
+            OnGetCurrentBalance();
         }
 
-        public async void OnRefreshUtxos()
+        public async void OnGetCurrentBalance()
         {
-            Utxos = await _blockfrostService.GetUtxos(Address.ToString());
+            var utxos = await _blockfrostService.GetUtxos(Address.ToString());
+            decimal balance = utxos.Sum(x => x.Amount.Where(y => y.Unit == "lovelace").Sum(y => y.Quantity));
+            balance = balance / 1000000;
+            CurrentBalance = $"{balance} ADA";
         }
 
         public async void OnSubmitTx()
