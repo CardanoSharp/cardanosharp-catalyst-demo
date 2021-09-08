@@ -31,7 +31,7 @@
                         BackgroundColor="{StaticResource Primary}"
                         TextColor="White" />
                     <Label Text="OR" FontAttributes="Bold" HorizontalTextAlignment="Center" FontSize="16" Padding="0,20,0,0"/>
-                    <Label Text="Restore Wallet" FontSize="16"  Padding="0,20,0,0"/>
+                    <Label Text="Enter Mnemonic" FontSize="16"  Padding="0,20,0,0"/>
                     <Entry Text="{Binding RestoreForm.Words}"/>
                     <Button
                         Command="{Binding RestoreWallet}"

@@ -163,9 +163,15 @@ namespace CardanoSharp.CatalystDemo.ViewModels
         public async void OnGetCurrentBalance()
         {
             var utxos = await _blockfrostService.GetUtxos(Address.ToString());
-            decimal balance = utxos.Sum(x => x.Amount.Where(y => y.Unit == "lovelace").Sum(y => y.Quantity));
-            balance = balance / 1000000;
-            CurrentBalance = $"{balance} ADA";
+            if (utxos != null && utxos.Any())
+            {
+                decimal balance = utxos.Sum(x => x.Amount.Where(y => y.Unit == "lovelace").Sum(y => y.Quantity));
+                balance = balance / 1000000;
+                CurrentBalance = $"{balance} ADA";
+            }else
+            {
+                CurrentBalance = $"0.000000 ADA";
+            }
         }
 
         public async void OnSubmitTx()
