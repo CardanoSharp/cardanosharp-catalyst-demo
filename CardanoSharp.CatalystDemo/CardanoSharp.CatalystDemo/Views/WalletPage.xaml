@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CardanoSharp.CatalystDemo.Views.WalletPage"
+             xmlns:local="clr-namespace:CardanoSharp.CatalystDemo.Components"
+             xmlns:vm="clr-namespace:CardanoSharp.CatalystDemo.ViewModels"
+             Title="Sharp Wallet">
+    
+    <ContentPage.BindingContext>
+        <vm:WalletViewModel/>
+    </ContentPage.BindingContext>
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#96d1ff</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <ScrollView BackgroundColor="#f2f5f7" Grid.Row="1">
+            <StackLayout Orientation="Vertical" Padding="30,24,30,24" Spacing="10">
+                <StackLayout Orientation="Vertical"  Spacing="10">
+                    <Button
+                        Command="{Binding GenerateWallet}"
+                        Margin="0,10,0,0" Text="Generate New Wallet"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White" />
+                    <Label Text="OR" FontAttributes="Bold" HorizontalTextAlignment="Center" FontSize="16" Padding="0,20,0,0"/>
+                    <Label Text="Enter Mnemonic" FontSize="16"  Padding="0,20,0,0"/>
+                    <Entry Text="{Binding RestoreForm.Words}"/>
+                    <Button
+                        Command="{Binding RestoreWallet}"
+                        Margin="0,10,0,0" Text="Restore Wallet"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White" />
+                </StackLayout>
+                <StackLayout IsVisible="{Binding WalletCreated}">
+                    <StackLayout  Orientation="Vertical" Padding="0,50,0,0" Spacing="5">
+                        <Label Text="Mnemonic" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Label Text="{Binding Mnemonic.Words}" FontSize="16" Padding="0,0,0,0"/>
+                    </StackLayout>
+                    <StackLayout  Orientation="Vertical" Padding="0,50,0,0" Spacing="5">
+                        <Label Text="Address" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Label Text="{Binding Address}" FontSize="16" Padding="0,0,0,0"/>
+                    </StackLayout>
+                    <StackLayout Orientation="Vertical" Padding="0,50,0,0" Spacing="5">
+                        <Label Text="Current Balance" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Label Text="{Binding CurrentBalance}" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                        <Button
+                            Command="{Binding GetCurrentBalance}"
+                            Margin="0,10,0,10" Text="Get Balance"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="White" />
+                    </StackLayout>
+                </StackLayout>
+
+                <StackLayout  IsVisible="{Binding WalletCreated}" Orientation="Vertical" Padding="0,20,0,20" Spacing="5">
+                    <Label Text="Send Ada" FontSize="26" FontAttributes="Bold" Padding="0,0,0,0"/>
+                    <Label Text="Reciever Address"  FontAttributes="Bold" Padding="0,0,0,0"/>
+                    <Entry Text="{Binding SendForm.RecieverAddress}"/>
+                    <Label Text="Amount"  FontAttributes="Bold" Padding="0,0,0,0"/>
+                    <Entry Text="{Binding SendForm.Amount}"/>
+                    <Label Text="Message"  FontAttributes="Bold" Padding="0,0,0,0"/>
+                    <Entry Text="{Binding SendForm.Message}"/>
+                    <Button
+                        Command="{Binding SubmitTx}"
+                        Margin="0,10,0,10" Text="Send"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                    />
+
+                    <Label HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Margin="0,20,0,0">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Transaction Id: "/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label Text="{Binding TransactionId}"/>
+                </StackLayout>
+                
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>
