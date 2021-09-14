@@ -22,7 +22,7 @@ namespace CardanoSharp.CatalystDemo.Services
 
     public class BlockfrostService: IBlockfrostService
     {
-        private readonly string _apiKey = "wtaPyfGZu6z0dJXkbZzHYio1A4qkfFKX";
+        private readonly string _apiKey = "BLOCKFROST_API_KEY_HERE";
 
         public async Task<int> GetLatestSlot()
         {
