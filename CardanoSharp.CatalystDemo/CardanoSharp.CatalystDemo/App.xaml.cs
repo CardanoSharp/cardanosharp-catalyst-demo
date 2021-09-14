@@ -21,7 +21,6 @@ namespace CardanoSharp.CatalystDemo
             DependencyService.Register<IWalletStore, WalletStore>();
             DependencyService.Register<IKeyService, KeyService>();
             DependencyService.Register<IAddressService, AddressService>();
-            DependencyService.Register<MockDataStore>();
             MainPage = new AppShell();
         }
 
