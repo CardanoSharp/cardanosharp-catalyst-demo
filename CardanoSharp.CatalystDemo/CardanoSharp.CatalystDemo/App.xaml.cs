@@ -9,18 +9,14 @@ using Xamarin.Forms.Xaml;
 
 namespace CardanoSharp.CatalystDemo
 {
+
     public partial class App : Application
     {
 
         public App()
         {
+            Startup.Init();
             InitializeComponent();
-            DependencyService.Register<IBlockfrostService, BlockfrostService>();
-            DependencyService.Register<ITransactionService, TransactionService>();
-            DependencyService.Register<Services.IWalletService, Services.WalletService>();
-            DependencyService.Register<IWalletStore, WalletStore>();
-            DependencyService.Register<IKeyService, KeyService>();
-            DependencyService.Register<IAddressService, AddressService>();
             MainPage = new AppShell();
         }
 
