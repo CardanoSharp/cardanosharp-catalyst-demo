@@ -12,6 +12,5 @@ namespace CardanoSharp.CatalystDemo
         {
             InitializeComponent();
         }
-
     }
 }

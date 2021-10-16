@@ -6,9 +6,10 @@
              xmlns:vm="clr-namespace:CardanoSharp.CatalystDemo.ViewModels"
              Title="Sharp Wallet">
     
-    <ContentPage.BindingContext>
+    <!--set in code-behind-->
+    <!--<ContentPage.BindingContext>
         <vm:WalletViewModel/>
-    </ContentPage.BindingContext>
+    </ContentPage.BindingContext>-->
     
     <ContentPage.Resources>
         <ResourceDictionary>

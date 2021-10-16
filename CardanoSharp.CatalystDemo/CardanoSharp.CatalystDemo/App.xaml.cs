@@ -15,9 +15,9 @@ namespace CardanoSharp.CatalystDemo
 
         public App()
         {
+            Startup.Init();
             InitializeComponent();
-            var bootstrap = new Bootstrapper(this);
-            bootstrap.Start();
+            MainPage = new AppShell();
         }
 
         protected override void OnStart()

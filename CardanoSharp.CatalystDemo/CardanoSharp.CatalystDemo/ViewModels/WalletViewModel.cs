@@ -1,27 +1,32 @@
-﻿using CardanoSharp.CatalystDemo.Models;
-using CardanoSharp.CatalystDemo.Services;
+﻿using CardanoSharp.CatalystDemo.Services;
 using CardanoSharp.Wallet.Models.Addresses;
 using CardanoSharp.Wallet.Models.Keys;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using System.Linq;
+using Blockfrost.Api.Services;
+using Blockfrost.Extensions.CardanoSharp;
+using Blockfrost.Api.Models.Extensions;
+using Blockfrost.Api;
+using Microsoft.Extensions.Logging;
 
 namespace CardanoSharp.CatalystDemo.ViewModels
 {
     public class WalletViewModel : BindableObject
     {
-
-        public WalletViewModel()
+        public WalletViewModel(
+            ILogger<WalletViewModel> logger,
+            IWalletService walletService,
+            IWalletStore walletStore,
+            ICardanoService cardanoService,
+            ITransactionBuilderService txBuilder)
         {
-            _walletService = DependencyService.Get<IWalletService>();
-            _blockfrostService = DependencyService.Get<IBlockfrostService>();
-            _transactionService = DependencyService.Get<ITransactionService>();
-            _walletStore = DependencyService.Get<IWalletStore>();
-
+            _logger = logger;
+            _walletService = walletService;
+            _walletStore = walletStore;
+            _cardano = cardanoService;
+            _txBuilder = txBuilder;
+            
             SubmitTx = new Command(OnSubmitTx);
             RestoreWallet = new Command(OnRestoreWallet);
             GetCurrentBalance = new Command(OnGetCurrentBalance);
@@ -134,10 +139,12 @@ namespace CardanoSharp.CatalystDemo.ViewModels
         public Command GetCurrentBalance { get; }
         public Command SubmitTx { get; }
 
+        private readonly ILogger<WalletViewModel> _logger;
         private readonly IWalletService _walletService;
-        private readonly IBlockfrostService _blockfrostService;
-        private readonly ITransactionService _transactionService;
         private readonly IWalletStore _walletStore;
+        private readonly ITransactionBuilderService _txBuilder;
+        private readonly ICardanoService _cardano;
+
 
         public async void OnGenerateWallet()
         {
@@ -162,15 +169,28 @@ namespace CardanoSharp.CatalystDemo.ViewModels
 
         public async void OnGetCurrentBalance()
         {
-            var utxos = await _blockfrostService.GetUtxos(Address.ToString());
-            if (utxos != null && utxos.Any())
+            //var utxos = await _blockfrostService.GetUtxos(Address.ToString());
+            try
             {
-                decimal balance = utxos.Sum(x => x.Amount.Where(y => y.Unit == "lovelace").Sum(y => y.Quantity));
-                balance = balance / 1000000;
-                CurrentBalance = $"{balance} ADA";
-            }else
-            {
+                // F01: _addressService.ThrowsOnError = false; // would return null
+                // F02: provide docs in package
                 CurrentBalance = $"0.000000 ADA";
+                
+                var utxos = await _cardano.Addresses.GetUtxosAsync(Address.ToString());
+                if (utxos != null && utxos.Any())
+                {
+                    var balance = utxos.SumAmounts("lovelace");
+                    balance = balance / 1000000;
+                    CurrentBalance = $"{balance} ADA";
+                }
+            }
+            catch (ApiException<NotFoundResponse>)
+            {
+                DependencyService.Get<IToast>().ShortAlert("A fresh wallet appeared!");
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "An unhandled exception occurred while querying UTxO for {0}", Address.ToString());
             }
         }
 
@@ -186,8 +206,17 @@ namespace CardanoSharp.CatalystDemo.ViewModels
                 Message = SendForm.Message
             };
 
-            var response = await _transactionService.Send(request, keyPair);
-            TransactionId = response.TransactionHash;
+            var transaction = await _txBuilder.BuildAsync(request, keyPair);
+            
+            try
+            {
+                var txId = await _cardano.Transactions.PostTxSubmitAsync(transaction);
+                TransactionId = txId;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
         }
     }
 

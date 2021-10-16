@@ -29,10 +29,10 @@ namespace CardanoSharp.CatalystDemo.Services
         private readonly IAddressService _addressService;
         private readonly IKeyService _keyService;
 
-        public WalletService()
+        public WalletService(IAddressService addressService, IKeyService keyService)
         {
-            _addressService = DependencyService.Get<IAddressService>();
-            _keyService = DependencyService.Get<IKeyService>(); ;
+            _addressService = addressService;
+            _keyService = keyService;
         }
 
         public async Task<Mnemonic> GenerateMnemonic(int size)
